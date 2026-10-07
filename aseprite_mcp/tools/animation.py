@@ -38,7 +38,7 @@ async def add_frames(filename: str, count: int, duration_ms: int | None = None) 
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Added {count} frames to {filename}"
     return f"Failed to add frames: {output}"
@@ -70,7 +70,7 @@ async def set_frame_duration_all(filename: str, duration_ms: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Set duration of all frames to {duration_ms}ms in {filename}"
     return f"Failed to set frame durations: {output}"
@@ -105,7 +105,7 @@ async def set_layer_visibility(filename: str, layer_name: str, visible: bool = T
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' visibility set to {visible} in {filename}"
     return f"Failed to set layer visibility: {output}"
@@ -141,7 +141,7 @@ async def set_layer_opacity(filename: str, layer_name: str, opacity: int) -> str
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' opacity set to {opacity} in {filename}"
     return f"Failed to set layer opacity: {output}"
@@ -206,7 +206,7 @@ async def get_sprite_info(filename: str) -> str:
     print(table.concat(parts))
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return output
     return f"Failed to get sprite info: {output}"
@@ -260,7 +260,7 @@ async def duplicate_frame_range(filename: str, start_frame: int, end_frame: int,
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Duplicated frames {start_frame}-{end_frame} (x{times}) in {filename}"
     return f"Failed to duplicate frame range: {output}"
@@ -334,7 +334,7 @@ async def set_cel_position(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Cel position set to ({x}, {y}) on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to set cel position: {output}"
@@ -422,7 +422,7 @@ async def tween_cel_positions(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Tweened cel positions on '{layer_name}' frames {start_frame}-{end_frame} in {filename}"
     return f"Failed to tween cel positions: {output}"
@@ -479,7 +479,7 @@ async def offset_cel_positions(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Offset cel positions by ({dx}, {dy}) on '{layer_name}' frames {start_frame}-{end_frame} in {filename}"
     return f"Failed to offset cel positions: {output}"
@@ -528,7 +528,7 @@ async def create_cel(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Cel created on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to create cel: {output}"
@@ -563,7 +563,7 @@ async def clear_cel(filename: str, layer_name: str, frame_index: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Cel cleared on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to clear cel: {output}"
@@ -613,7 +613,7 @@ async def copy_cel(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Cel copied on '{layer_name}' from frame {source_frame} to {target_frame} in {filename}"
     return f"Failed to copy cel: {output}"
@@ -672,7 +672,7 @@ async def copy_frame(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         if target_frame is None:
             return f"Frame {source_frame} copied to new frame in {filename}"
@@ -742,7 +742,7 @@ async def propagate_frame_to_range(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Propagated frame {source_frame} to frames {start_frame}-{end_frame} "
@@ -802,7 +802,7 @@ async def set_tag(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Tag '{name}' set to frames {from_frame}-{to_frame} (direction={direction}) in {filename}"
     return f"Failed to set tag: {output}"
@@ -902,7 +902,7 @@ async def propagate_cels(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Propagated cels from frame {source_frame} to frames {start_frame}-{end_frame} "
@@ -999,7 +999,7 @@ async def tween_cel_positions_eased(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Tweened cel positions ({easing}) on '{layer_name}' frames {start_frame}-{end_frame} "
@@ -1085,7 +1085,7 @@ async def oscillate_cel_positions(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Oscillated cel positions on '{layer_name}' frames {start_frame}-{end_frame} "
@@ -1183,7 +1183,7 @@ async def tween_cel_opacity_eased(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Tweened cel opacity ({easing}) on '{layer_name}' frames {start_frame}-{end_frame} "
@@ -1307,7 +1307,7 @@ async def tween_cel_scale_eased(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Tweened cel scale ({easing}) on '{layer_name}' frames {start_frame}-{end_frame} "
@@ -1343,7 +1343,7 @@ async def delete_frame(filename: str, frame_index: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Frame {frame_index} deleted from {filename}"
     return f"Failed to delete frame: {output}"
@@ -1379,7 +1379,7 @@ async def delete_tag(filename: str, name: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Tag '{name}' deleted from {filename}"
     return f"Failed to delete tag: {output}"
@@ -1428,7 +1428,7 @@ async def set_cel_opacity(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Cel opacity set to {opacity} on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to set cel opacity: {output}"

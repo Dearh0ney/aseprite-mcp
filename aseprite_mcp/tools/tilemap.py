@@ -70,7 +70,7 @@ async def create_tilemap_layer(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Tilemap layer '{layer_name}' created with {tile_width}x{tile_height} "
@@ -153,7 +153,7 @@ async def draw_on_tile(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Drew {len(pixels)} pixels on tile {tile_index} of '{layer_name}' "
@@ -255,7 +255,7 @@ async def set_tiles(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Placed {len(tiles)} tiles on '{layer_name}' frame {frame_index} "
@@ -313,7 +313,7 @@ async def get_tile_at(
     print("TILE:" .. tile)
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to read tile: {output}"
 
@@ -358,7 +358,7 @@ async def get_tilemap_info(filename: str, layer_name: str) -> str:
         math.ceil(spr.height / grid.height)))
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to get tilemap info: {output}"
 

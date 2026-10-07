@@ -33,7 +33,7 @@ async def run_lua_script(script: str, filename: str = "") -> str:
     if filename and not os.path.exists(filename):
         return f"File {filename} not found"
 
-    success, output = AsepriteCommand.execute_lua_script(script, filename or None)
+    success, output = await AsepriteCommand.execute_lua_script_async(script, filename or None)
     if success:
         return output if output.strip() else "Script executed (no output printed)"
     return f"Script failed: {output}"

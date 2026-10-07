@@ -56,7 +56,7 @@ async def create_slice(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Slice '{name}' created at ({x},{y}) {width}x{height} in {filename}"
     return f"Failed to create slice: {output}"
@@ -106,7 +106,7 @@ async def set_slice_center(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Slice '{name}' 9-patch center set to ({x},{y}) {width}x{height} in {filename}"
     return f"Failed to set slice center: {output}"
@@ -142,7 +142,7 @@ async def set_slice_pivot(filename: str, name: str, x: int, y: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Slice '{name}' pivot set to ({x},{y}) in {filename}"
     return f"Failed to set slice pivot: {output}"
@@ -182,7 +182,7 @@ async def list_slices(filename: str) -> str:
     print("DONE")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to list slices: {output}"
 
@@ -222,7 +222,7 @@ async def delete_slice(filename: str, name: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Slice '{name}' deleted from {filename}"
     return f"Failed to delete slice: {output}"

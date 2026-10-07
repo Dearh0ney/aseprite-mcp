@@ -25,7 +25,7 @@ async def create_canvas(width: int, height: int, filename: str = "canvas.aseprit
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script)
 
     if success:
         return f"Canvas created successfully: {filename}"
@@ -69,7 +69,7 @@ async def add_layer(filename: str, layer_name: str, group: str = "") -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         location = f" inside group '{group}'" if group else ""
@@ -117,7 +117,7 @@ async def add_group(filename: str, group_name: str, parent_group: str = "") -> s
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         location = f" inside '{parent_group}'" if parent_group else ""
@@ -146,7 +146,7 @@ async def add_frame(filename: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"New frame added successfully to {filename}"
@@ -181,7 +181,7 @@ async def set_frame(filename: str, frame_index: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Active frame set to {frame_index} in {filename}"
@@ -219,7 +219,7 @@ async def set_frame_duration(filename: str, frame_index: int, duration_ms: int) 
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Frame {frame_index} duration set to {duration_ms}ms in {filename}"
@@ -264,7 +264,7 @@ async def set_layer(filename: str, layer_name: str, create_if_missing: bool = Fa
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Active layer set to '{layer_name}' in {filename}"

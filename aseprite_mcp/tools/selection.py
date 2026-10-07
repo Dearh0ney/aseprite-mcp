@@ -93,7 +93,7 @@ async def move_region(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Moved {width}x{height} region from ({x},{y}) to ({dest_x},{dest_y}) "
@@ -195,7 +195,7 @@ async def copy_region(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Copied {width}x{height} region from ({x},{y}) to ({dest_x},{dest_y}) "
@@ -260,7 +260,7 @@ async def erase_region(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Erased {width}x{height} region at ({x},{y}) on '{layer_name}' "
@@ -334,7 +334,7 @@ async def erase_color(
     print("COUNT:" .. count)
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to erase color: {output}"
 

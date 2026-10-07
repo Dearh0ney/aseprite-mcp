@@ -1,9 +1,17 @@
 import os
-from typing import List, Dict, Any
+from typing import List, Dict
+from typing_extensions import TypedDict
+from pydantic import StrictInt
 from ..core.commands import AsepriteCommand, lua_escape
 from ..core.lua import FIND_LAYER, NORMALIZE_CEL, PSET
 from ..core.colors import parse_hex_color
 from .. import mcp
+
+
+class Pixel(TypedDict, total=False):
+    x: StrictInt
+    y: StrictInt
+    color: str
 
 
 def _parse_hex_color(value: str) -> tuple[int, int, int, int] | None:
@@ -12,7 +20,7 @@ def _parse_hex_color(value: str) -> tuple[int, int, int, int] | None:
 
 
 @mcp.tool()
-async def draw_pixels(filename: str, pixels: List[Dict[str, Any]]) -> str:
+async def draw_pixels(filename: str, pixels: List[Pixel]) -> str:
     """Draw pixels on the canvas with specified colors.
 
     Args:
@@ -67,7 +75,7 @@ async def draw_pixels(filename: str, pixels: List[Dict[str, Any]]) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Pixels drawn successfully in {filename}"
@@ -151,7 +159,7 @@ async def draw_line(filename: str, x1: int, y1: int, x2: int, y2: int, color: st
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Line drawn successfully in {filename}"
@@ -214,7 +222,7 @@ async def draw_rectangle(filename: str, x: int, y: int, width: int, height: int,
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Rectangle drawn successfully in {filename}"
@@ -266,7 +274,7 @@ async def fill_area(filename: str, x: int, y: int, color: str = "#000000") -> st
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Area filled successfully in {filename}"
@@ -324,7 +332,7 @@ async def draw_circle(filename: str, center_x: int, center_y: int, radius: int, 
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
 
     if success:
         return f"Circle drawn successfully in {filename}"
@@ -336,7 +344,7 @@ async def draw_pixels_at(
     filename: str,
     layer_name: str,
     frame_index: int,
-    pixels: List[Dict[str, Any]],
+    pixels: List[Pixel],
     create_if_missing: bool = True
 ) -> str:
     """Draw pixels on a specific layer/frame.
@@ -395,7 +403,7 @@ async def draw_pixels_at(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Pixels drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw pixels: {output}"
@@ -496,7 +504,7 @@ async def draw_line_at(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Line drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw line: {output}"
@@ -575,7 +583,7 @@ async def draw_rectangle_at(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Rectangle drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw rectangle: {output}"
@@ -651,7 +659,7 @@ async def draw_circle_at(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Circle drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw circle: {output}"
@@ -719,7 +727,7 @@ async def fill_area_at(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Area filled on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to fill area: {output}"
@@ -843,7 +851,7 @@ async def draw_polygon(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Polygon drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw polygon: {output}"
@@ -940,7 +948,7 @@ async def draw_path(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Path drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw path: {output}"
@@ -1034,7 +1042,7 @@ async def apply_gradient_rect(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Gradient applied on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to apply gradient: {output}"
@@ -1115,7 +1123,7 @@ async def draw_ellipse_at(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Ellipse drawn on '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to draw ellipse: {output}"

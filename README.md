@@ -271,14 +271,14 @@ Batch-mode equivalents of what a human artist gets from the Aseprite UI.
 
 | Tool | Description |
 |------|-------------|
-| `start_preview_server` / `stop_preview_server` | Serve exported files over local HTTP |
+| `start_preview_server` / `stop_preview_server` | Preview exported images at a private loopback URL |
 | `animation_workflow_guide` | Returns a step-by-step workflow guide for the LLM |
 
 ### Scripting
 
 | Tool | Description |
 |------|-------------|
-| `run_lua_script` | Execute arbitrary Aseprite Lua ([API docs](https://www.aseprite.org/api/)) in batch mode. The escape hatch when no dedicated tool fits: one script can batch many operations into a single Aseprite launch. Remember to `spr:saveAs(spr.filename)` and `print()` your results. ⚠️ Runs unrestricted code on the host — only pass scripts you trust. |
+| `run_lua_script` | Execute arbitrary Aseprite Lua ([API docs](https://www.aseprite.org/api/)) in batch mode. One script can batch many operations into a single Aseprite launch. Remember to `spr:saveAs(spr.filename)` and `print()` your results. Runs unrestricted code on the host; only pass scripts you trust. Disabled when `ASEPRITE_WORKSPACE_ROOT` is configured. |
 
 ## Recommended Workflow for LLMs
 
@@ -332,6 +332,49 @@ If installed, the binary will be at `/opt/steamapps/common/Aseprite/aseprite` an
 - Python 3.13+
 - `uv` package manager
 - Aseprite (set `ASEPRITE_PATH` in `.env` if it is not on your PATH)
+
+Run `uv sync` in the repository before configuring your MCP client. The server
+uses MCP SDK 2.x; `uv.lock` records the resolved dependency versions.
+
+### Security and resource limits
+
+All tool paths are normalized to absolute paths, and explicit `..` components
+are rejected before normalization. Set `ASEPRITE_WORKSPACE_ROOT` in `.env` to
+restrict tool paths, including fonts, to a chosen directory. Existing symlinks
+are resolved before this check. This is an application path check, not an OS
+sandbox; unrestricted Lua is disabled while the root is configured. Without a
+root, absolute paths outside the repository remain supported.
+
+`start_preview_server` binds to `127.0.0.1` and returns a random-token URL. Open
+the complete returned URL; the bare port URL is denied. Only raster images and
+directory listings are served; HTML, SVG, configuration files, and symlinks are
+excluded. Treat the URL as private. Preview servers belong to the current MCP
+process, stop when it exits, and use no PID files. `stop_preview_server` can only
+stop a server created by that process.
+
+Aseprite commands run without blocking the MCP event loop. Commands have a
+30-second timeout, including time waiting for an execution slot, and a combined
+2 MiB stdout/stderr limit. Set `ASEPRITE_TIMEOUT_SECONDS` to a positive value up
+to 300 if needed. Cancellation and timeout terminate the child process tree and
+remove temporary scripts. Up to two commands run concurrently; operations on
+the same file are serialized to prevent lost updates.
+
+Inputs are bounded before large allocations or Lua generation:
+
+| Input | Limit |
+|-------|-------|
+| Canvas/image dimensions | Each side 1–4096; at most 4,194,304 pixels |
+| Sprite animation | At most 1024 frames and 16,777,216 total frame pixels |
+| Input/preview file | 128 MiB |
+| Pixels/tiles in one call; rectangular pixel reads | 65,536 entries/pixels |
+| Coordinates | ±8192 |
+| Text; font size; bold/outline | 4096 UTF-8 bytes; size 1–256; bold/outline 0–16 |
+| Text raster | 262,144 pixels |
+| Generated or supplied Lua | 1 MiB |
+
+Export path templates are rejected. Layer exports sanitize names on a temporary
+sprite copy, disambiguate collisions, and keep output inside the chosen directory.
+The source layer names are preserved.
 
 ### Installation:
 ```json

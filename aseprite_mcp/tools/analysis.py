@@ -119,7 +119,7 @@ async def render_onion_skin(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Onion-skin render of frame {frame_index} "
@@ -199,7 +199,7 @@ async def compare_frames(filename: str, frame_a: int, frame_b: int) -> str:
         (changed > 0) and 1 or 0))
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to compare frames: {output}"
 
@@ -284,7 +284,7 @@ async def get_color_stats(filename: str, frame_index: int = 1, top: int = 16) ->
     print("UNIQUE:" .. unique)
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to get color stats: {output}"
 

@@ -116,7 +116,7 @@ async def ensure_layers_present(
         .replace("__LAYERS__", layers_lua)
     )
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Ensured cels for layers {', '.join(layer_names)} "
@@ -205,7 +205,7 @@ async def validate_scene(
         .replace("__LAYERS__", layers_lua)
     )
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return output
     return f"Failed to validate scene: {output}"
@@ -441,7 +441,7 @@ async def audit_animation(
     print(table.concat(parts))
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return output
     return f"Failed to audit animation: {output}"
@@ -855,7 +855,7 @@ async def animation_sanitize(
     return output
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return output
     return f"Failed to sanitize animation: {output}"

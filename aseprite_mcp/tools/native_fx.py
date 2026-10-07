@@ -72,7 +72,7 @@ async def outline_native(
     cmd = (f'        app.command.Outline{{ui=false, color=Color{{r={r}, g={g}, '
            f'b={b}, a=255}}, place="{place}", matrix="{matrix}"}}')
     script = build_native_command_script(cmd, layer_name, frame_index)
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Outlined ({place}, {matrix}) {layer_name or 'active layer'} in {filename}"
     return f"Failed to outline: {output}"
@@ -112,7 +112,7 @@ async def adjust_hsl_native(
            f'saturation={saturation}, lightness={lightness}, alpha=0}}')
     script = build_native_command_script(cmd, layer_name, frame_index,
                                          _region(x, y, width, height))
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Adjusted HSL on {layer_name or 'active layer'} in {filename}"
     return f"Failed to adjust HSL: {output}"
@@ -148,7 +148,7 @@ async def adjust_brightness_contrast(
            f'brightness={brightness}, contrast={contrast}}}')
     script = build_native_command_script(cmd, layer_name, frame_index,
                                          _region(x, y, width, height))
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Adjusted brightness/contrast on {layer_name or 'active layer'} in {filename}"
     return f"Failed to adjust brightness/contrast: {output}"
@@ -177,7 +177,7 @@ async def invert_colors(
     cmd = "        app.command.InvertColor{ui=false}"
     script = build_native_command_script(cmd, layer_name, frame_index,
                                          _region(x, y, width, height))
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Inverted colours on {layer_name or 'active layer'} in {filename}"
     return f"Failed to invert: {output}"
@@ -212,7 +212,7 @@ async def apply_convolution(
     cmd = f'        app.command.ConvolutionMatrix{{ui=false, fromResource="{lua_escape(matrix)}"}}'
     script = build_native_command_script(cmd, layer_name, frame_index,
                                          _region(x, y, width, height))
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Applied convolution '{matrix}' on {layer_name or 'active layer'} in {filename}"
     return f"Failed to apply convolution: {output}"
@@ -267,7 +267,7 @@ async def extract_palette(
     end
     print("OK")
     """
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to extract palette: {output}"
     colors = [ln[len("PALETTE:"):] for ln in output.splitlines() if ln.startswith("PALETTE:")]

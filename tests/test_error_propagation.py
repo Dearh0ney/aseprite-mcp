@@ -6,7 +6,7 @@ message from their input args even when the script did nothing. Every call
 below feeds invalid input and asserts the tool now reports failure instead
 of a fabricated success.
 """
-from conftest import ok, run
+from conftest import BASE, ok, run
 
 from aseprite_mcp.tools import (
     animation,
@@ -52,18 +52,18 @@ def test_ensure_layers_present_all_missing(sprite):
 
 def test_export_sprite_unwritable_format(sprite):
     # Aseprite exits 0 but writes nothing for format="json".
-    failed(run(export.export_sprite(sprite, "/tmp/ase-pytest/err_out", "json")))
+    failed(run(export.export_sprite(sprite, f"{BASE}/err_out", "json")))
 
 
 def test_export_tag_missing_tag(sprite):
     # --tag silently exports *all* frames (exit 0) for an unknown tag, so the
     # tool must validate the tag rather than report a fabricated tag export.
-    failed(run(export.export_tag(sprite, "NO_SUCH_TAG", "/tmp/ase-pytest/err_tag.gif")))
+    failed(run(export.export_tag(sprite, "NO_SUCH_TAG", f"{BASE}/err_tag.gif")))
 
 
 def test_export_spritesheet_missing_tag(sprite):
     failed(run(export.export_spritesheet(
-        sprite, "/tmp/ase-pytest/err_sheet.png", "horizontal", "", 1, 0, "NO_SUCH_TAG")))
+        sprite, f"{BASE}/err_sheet.png", "horizontal", "", 1, 0, "NO_SUCH_TAG")))
 
 
 # --- readers surfaced a hard error as data (read as success); now fail loudly ---

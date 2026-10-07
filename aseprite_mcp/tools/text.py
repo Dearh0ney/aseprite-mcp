@@ -5,6 +5,7 @@ result is blitted into the sprite as an image.
 """
 
 import os
+import asyncio
 import tempfile
 from typing import Optional
 
@@ -15,6 +16,11 @@ from ..core.colors import parse_hex_color
 from ..core.lua import FIND_LAYER, NORMALIZE_CEL
 from ..core import fonts as fontlib
 from .. import mcp
+from ..core.security import check_area
+
+
+def _shape_text(text, font, size, letter_spacing, bold, antialias):
+    return fontlib.shape(text, fontlib.load_font(font), size, letter_spacing, bold, antialias)
 
 _ANCHORS = (
     "topleft", "top", "topright",
@@ -105,8 +111,7 @@ async def measure_text(
         baseline.
     """
     try:
-        f = fontlib.load_font(font)
-        _, m = fontlib.shape(text, f, size, letter_spacing, bold, antialias)
+        _, m = await asyncio.to_thread(_shape_text, text, font, size, letter_spacing, bold, antialias)
     except Exception as exc:
         return f"ERROR: {exc}"
     return (
@@ -192,8 +197,7 @@ async def draw_text(
             return f"Invalid shadow_color value: {shadow_color}"
 
     try:
-        f = fontlib.load_font(font)
-        ink, metrics = fontlib.shape(text, f, size, letter_spacing, bold, antialias)
+        ink, metrics = await asyncio.to_thread(_shape_text, text, font, size, letter_spacing, bold, antialias)
     except Exception as exc:
         return f"ERROR: {exc}"
     if not ink:
@@ -204,6 +208,8 @@ async def draw_text(
     if outline_rgba:
         outline = set(ink)
         for _ in range(max(1, outline_width)):
+            if len(outline) * 9 > fontlib.MAX_TEXT_PIXELS:
+                return "Invalid input: text outline exceeds pixel limit"
             grown = set(outline)
             for px, py in outline:
                 grown.update({(px - 1, py), (px + 1, py), (px, py - 1), (px, py + 1)})
@@ -221,6 +227,10 @@ async def draw_text(
     max_x = max(p[0] for p in everything)
     max_y = max(p[1] for p in everything)
     w, h = max_x - min_x + 1, max_y - min_y + 1
+    try:
+        check_area(w, h, limit=fontlib.MAX_TEXT_PIXELS)
+    except ValueError as error:
+        return f"Invalid input: {error}"
 
     # The anchor is resolved against the glyph box alone, so adding an outline
     # or a shadow never shifts where the letters themselves land.
@@ -281,7 +291,7 @@ async def draw_text(
     """
 
     try:
-        success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+        success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     finally:
         try:
             os.unlink(tmp.name)

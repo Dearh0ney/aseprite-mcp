@@ -76,7 +76,7 @@ async def get_palette(filename: str) -> str:
     print(table.concat(parts))
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return output
     return f"Failed to get palette: {output}"
@@ -111,7 +111,7 @@ async def set_palette(filename: str, colors: List[str]) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Palette set with {len(colors)} colors in {filename}"
     return f"Failed to set palette: {output}"
@@ -225,7 +225,7 @@ async def remap_colors_in_cel_range(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Remapped colors on '{layer_name}' frames {start_frame}-{end_frame} in {filename}"
@@ -415,7 +415,7 @@ async def quantize_to_palette(
     print("COUNT:" .. count)
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to quantize: {output}"
 
@@ -449,7 +449,7 @@ async def set_color_mode(filename: str, mode: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Color mode set to {mode} in {filename}"
     return f"Failed to set color mode: {output}"

@@ -47,9 +47,13 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from dataclasses import dataclass, field
 
 from PIL import Image, ImageDraw, ImageFont
+from .security import MAX_ITEMS, MAX_PIXELS, MAX_TEXT, check_area, validate_path
+
+MAX_TEXT_PIXELS = 262_144
 
 FONT_DIR = os.path.expanduser("~/.aseprite-mcp/fonts")
 
@@ -97,8 +101,12 @@ class BitmapFont:
     is_bitmap = True
 
     def __init__(self, path: str):
+        self.path = path
         descriptor = os.path.join(path, "font.json")
         try:
+            descriptor = validate_path(descriptor)
+            if os.path.getsize(descriptor) > 1_048_576:
+                raise FontError("Font descriptor exceeds 1 MiB")
             with open(descriptor, encoding="utf-8") as fh:
                 spec = json.load(fh)
         except (OSError, ValueError) as exc:
@@ -113,8 +121,13 @@ class BitmapFont:
 
         for sheet in spec.get("sheets") or ():
             try:
-                image = Image.open(os.path.join(path, sheet["file"])).convert("RGBA")
-            except (OSError, KeyError) as exc:
+                sheet_path = Path(validate_path(str(Path(path) / sheet["file"])))
+                if not sheet_path.is_relative_to(Path(path).resolve()):
+                    raise ValueError("Font sheet is outside its font directory")
+                with Image.open(sheet_path) as source:
+                    check_area(*source.size)
+                    image = source.convert("RGBA")
+            except (OSError, KeyError, ValueError) as exc:
                 raise FontError(f"Bad sheet in {descriptor}: {exc}") from exc
             self._sheets.append({
                 "px": image.load(),
@@ -133,12 +146,17 @@ class BitmapFont:
                 #        the font's own side bearing.
                 "advance": sheet.get("advance", "ink"),
             })
+            check_area(int(sheet["cell_w"]), int(sheet["cell_h"]))
+            if len(self._sheets) > 16 or sum(s["size"][0] * s["size"][1] for s in self._sheets) > MAX_PIXELS:
+                raise FontError("Font exceeds sheet limits")
             index = len(self._sheets) - 1
             for row, line in enumerate(sheet.get("chars") or ()):
                 for col, char in enumerate(line):
                     codepoint = ord(char)
                     if codepoint and codepoint not in self._index:
                         self._index[codepoint] = (index, row, col)
+                    if len(self._index) > MAX_ITEMS:
+                        raise FontError("Font has too many glyphs")
 
         if not self._sheets:
             raise FontError(f"{descriptor} declares no sheets")
@@ -214,6 +232,8 @@ class BitmapFont:
             glyph = self.glyph(ord(char))
             if glyph is None:
                 continue
+            if len(ink) + len(glyph.ink) * scale * scale > MAX_TEXT_PIXELS:
+                raise FontError("Text raster exceeds pixel limit")
             for gx, gy in glyph.ink:
                 base_x = pen + gx * scale
                 base_y = (gy - glyph.ascent) * scale
@@ -226,6 +246,8 @@ class BitmapFont:
 
 def _glyph_from_rows(rows: list[str], ascent: int | None, letter_gap: int) -> Glyph:
     """Build a glyph from `#`-and-`.` rows, as used by font.json overrides."""
+    if len(rows) > 4096 or sum(map(len, rows)) > MAX_TEXT_PIXELS:
+        raise FontError("Glyph exceeds pixel limit")
     ink: set[Point] = set()
     width = 0
     for y, line in enumerate(rows):
@@ -274,6 +296,8 @@ class TrueTypeFont:
         pen = 0
         for char in text:
             glyph_ink, advance = self._raster(font, char, antialias, threshold)
+            if len(ink) + len(glyph_ink) > MAX_TEXT_PIXELS:
+                raise FontError("Text raster exceeds pixel limit")
             ink |= {(x + pen, y) for x, y in glyph_ink}
             pen += advance + letter_spacing
         return ink, max(0, pen - letter_spacing)
@@ -289,7 +313,7 @@ class TrueTypeFont:
         pad = max(8, int(getattr(font, "size", 0) or 0))
         width = max(1, max(box[2], advance) + pad * 2)
         height = max(1, ascent + descent + pad * 2)
-
+        check_area(width, height, limit=MAX_TEXT_PIXELS)
         canvas = Image.new("L", (width, height), 0)
         ImageDraw.Draw(canvas).text((pad, pad), text, font=font, fill=255)
         px = canvas.load()
@@ -352,13 +376,14 @@ _loaded: dict[str, BitmapFont | TrueTypeFont] = {}
 def load_font(spec: str) -> BitmapFont | TrueTypeFont:
     """Resolve a font by name, or by path to a font file/bitmap font directory."""
     if spec in _loaded:
+        validate_path(_loaded[spec].path)
         return _loaded[spec]
 
     path: str | None = None
     kind: str | None = None
 
     if os.path.sep in spec or spec.lower().endswith(_TTF_EXT):
-        expanded = os.path.expanduser(spec)
+        expanded = validate_path(spec)
         if os.path.isdir(expanded) and os.path.exists(os.path.join(expanded, "font.json")):
             path, kind = expanded, "bitmap"
         elif os.path.isfile(expanded):
@@ -376,6 +401,7 @@ def load_font(spec: str) -> BitmapFont | TrueTypeFont:
             f"or pass a path to a .ttf/.otf file or to a bitmap font directory."
         )
 
+    path = validate_path(path)
     font = BitmapFont(path) if kind == "bitmap" else TrueTypeFont(path)
     _loaded[spec] = font
     return font
@@ -394,6 +420,8 @@ def clear_cache() -> None:
 def _dilate(ink: set[Point], passes: int) -> set[Point]:
     """Faux bold: grow right and down, which keeps counters open."""
     for _ in range(passes):
+        if len(ink) * 3 > MAX_TEXT_PIXELS:
+            raise FontError("Bold text exceeds pixel limit")
         ink = ink | {(x + 1, y) for x, y in ink} | {(x, y + 1) for x, y in ink}
     return ink
 
@@ -412,8 +440,8 @@ def shape(
     Returns (ink, metrics). Ink coordinates run from the pen origin on x and
     from the baseline on y, so anything above the baseline is negative.
     """
-    if bold < 0:
-        raise FontError("bold must be >= 0")
+    if not 0 <= bold <= 16 or size > 256 or len(text) > MAX_TEXT:
+        raise FontError("Text, size or bold exceeds supported limits")
 
     if font.is_bitmap:
         if size < 1:

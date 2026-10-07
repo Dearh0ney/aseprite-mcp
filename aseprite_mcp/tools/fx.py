@@ -88,7 +88,7 @@ async def outline_cel(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Outline added to '{layer_name}' frame {frame_index} in {filename}"
     return f"Failed to outline cel: {output}"
@@ -164,7 +164,7 @@ async def replace_color(
     print("COUNT:" .. count)
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if not success:
         return f"Failed to replace color: {output}"
 
@@ -251,7 +251,7 @@ async def adjust_hsl(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Adjusted HSL (h{hue_shift:+g}, s{saturation_shift:+g}, l{lightness_shift:+g}) "
@@ -352,7 +352,7 @@ async def apply_dither_gradient(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         direction = "horizontal" if horizontal else "vertical"
         return (
@@ -453,7 +453,7 @@ async def apply_dither_pattern(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return (
             f"Dither pattern ({color_a}/{color_b}, density {density}) applied at "

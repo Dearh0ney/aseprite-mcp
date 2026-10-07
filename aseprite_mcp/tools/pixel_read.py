@@ -62,7 +62,7 @@ async def get_pixel_color(
     print(string.format("PIXEL:%d,%d,%d,%d", r, g, b, a))
     """
 
-    success, output = AsepriteCommand.execute_lua_script(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_async(script, filename)
     if not success:
         return f"Failed to read pixel: {output}"
 
@@ -153,7 +153,7 @@ async def get_pixels_rect(
     end
     """
 
-    success, output = AsepriteCommand.execute_lua_script(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_async(script, filename)
     if not success:
         return f"Failed to read pixels: {output}"
 
@@ -212,7 +212,7 @@ async def get_composite_pixel(filename: str, x: int, y: int, frame_index: int = 
     print(string.format("PIXEL:%d,%d,%d,%d", r, g, b, a))
     """
 
-    success, output = AsepriteCommand.execute_lua_script(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_async(script, filename)
     if not success:
         return f"Failed to read composite pixel: {output}"
     for line in output.splitlines():
@@ -280,7 +280,7 @@ async def get_composite_rect(
     end
     """
 
-    success, output = AsepriteCommand.execute_lua_script(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_async(script, filename)
     if not success:
         return f"Failed to read composite pixels: {output}"
     pixels = []

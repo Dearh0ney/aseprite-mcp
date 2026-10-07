@@ -70,7 +70,7 @@ async def flip_layer(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' flipped {direction}ly in {filename}"
     return f"Failed to flip layer: {output}"
@@ -165,7 +165,7 @@ async def rotate_layer(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' rotated {angle}° clockwise in {filename}"
     return f"Failed to rotate layer: {output}"
@@ -197,7 +197,7 @@ async def resize_canvas(filename: str, width: int, height: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Canvas resized to {width}x{height} in {filename}"
     return f"Failed to resize canvas: {output}"
@@ -235,7 +235,7 @@ async def crop_canvas(filename: str, x: int, y: int, width: int, height: int) ->
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Canvas cropped to ({x},{y}) {width}x{height} in {filename}"
     return f"Failed to crop canvas: {output}"

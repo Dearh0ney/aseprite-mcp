@@ -55,7 +55,7 @@ async def delete_layer(filename: str, layer_name: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' deleted from {filename}"
     return f"Failed to delete layer: {output}"
@@ -93,7 +93,7 @@ async def rename_layer(filename: str, layer_name: str, new_name: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' renamed to '{new_name}' in {filename}"
     return f"Failed to rename layer: {output}"
@@ -161,7 +161,7 @@ async def duplicate_layer(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         location = f" inside group '{group}'" if group else ""
         return f"Layer '{layer_name}' duplicated as '{final_name}'{location} in {filename}"
@@ -200,7 +200,7 @@ async def reorder_layer(filename: str, layer_name: str, position: int) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' moved to position {position} in {filename}"
     return f"Failed to reorder layer: {output}"
@@ -242,7 +242,7 @@ async def set_layer_blend_mode(filename: str, layer_name: str, mode: str) -> str
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' blend mode set to {mode} in {filename}"
     return f"Failed to set blend mode: {output}"
@@ -276,7 +276,7 @@ async def merge_layer_down(filename: str, layer_name: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Layer '{layer_name}' merged down in {filename}"
     return f"Failed to merge layer down: {output}"
@@ -304,7 +304,7 @@ async def flatten_sprite(filename: str) -> str:
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script, filename)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script, filename)
     if success:
         return f"Sprite flattened in {filename}"
     return f"Failed to flatten sprite: {output}"

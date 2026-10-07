@@ -105,7 +105,7 @@ async def copy_layers_between_sprites(
     print("OK")
     """
 
-    success, output = AsepriteCommand.execute_lua_script_checked(script)
+    success, output = await AsepriteCommand.execute_lua_script_checked_async(script)
     if not success:
         return f"Failed to copy layers: {output}"
     missing = next(
